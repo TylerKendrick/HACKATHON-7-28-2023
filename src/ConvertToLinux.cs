@@ -48,10 +48,22 @@ public static class ConvertToLinux
                 new Uri(openaiUri),
                 new AzureKeyCredential(azureKeyCredential));
 
-        string prompt = $"Convert to windows shell commands: {req.Body}";
+        string prompt = $"Convert the following: {req.Body}";
+        var prompts = new CompletionsOptions()
+            {
+                Prompts = 
+                {
+                    "Convert Windows Batch script into Linux Bash Scripts.",
+                    "Exit Status: https://www.geeksforgeeks.org/exit-status-variable-in-linux/",
+                    "Save all call exit status,  $?,  into a unique variable before If testing .",
+                    "Save exit status into a variable after all sqlplus calls in script.",
+                    "Use unique variable in all output processing.",
+                    prompt
+                }
+            };
         Response<Completions> response = await client.GetCompletionsAsync(
             "gpt-35-turbo", // assumes a matching model deployment or model name
-            prompt);
+            prompts);
 
         var responseBody = string.Join(Environment.NewLine, response.Value.Choices);
         return new OkObjectResult(responseBody);
